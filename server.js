@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const express = require('express');
 const app = express();
-var cors = require('cors');
+const cors = require('cors');
 const port = 8000;
 
 let users;
@@ -22,7 +22,6 @@ const addMsgToRequest = function (req, res, next) {
         error: {message: 'users not found', status: 404}
     });
   }
-  
 }
 
 app.use(
@@ -40,6 +39,16 @@ app.get('/read/usernames', (req, res) => {
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use('/write/adduser', addMsgToRequest);
+
+app.get('/read/username/:name', (req, res) => {
+  const username = req.params.name;
+  const user = req.users.find(user => user.username === username);
+  if (user) {
+    res.json({ username: user.username, email: user.email });
+  } else {
+    res.status(404).json({ error: 'User not found' });
+  }
+});
 
 app.post('/write/adduser', (req, res) => {
   let newuser = req.body;
